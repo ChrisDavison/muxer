@@ -1,0 +1,13 @@
+[project]
+name = "muxer"
+version = "0.1.0"
+description = "Easily handle tmux sessions"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "iterfzf>=1.4.0.54.3",
+    "omegaconf>=2.3.0",
+]
+
+[project.scripts]
+muxer = "muxer:main"
