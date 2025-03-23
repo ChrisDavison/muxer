@@ -21,7 +21,7 @@ logging.basicConfig(encoding="utf-8", level=logging.DEBUG)
 # Local paths will look first in the file ~/.muxerrc
 # if that does not exist, then we will use each of the directories
 # specified in LOCAL_PATHS
-LOCAL_PATHS = ["~/notes", "~/Syncthing", "~/scratch", "~/code/*", "~/work/*"]
+LOCAL_PATHS = ["~/notes", "~/Syncthing", "~/scratch", "~/code/*", "~/work/*", "~/recipes"]
 
 
 class Muxer:
