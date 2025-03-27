@@ -21,7 +21,14 @@ logging.basicConfig(encoding="utf-8", level=logging.DEBUG)
 # Local paths will look first in the file ~/.muxerrc
 # if that does not exist, then we will use each of the directories
 # specified in LOCAL_PATHS
-LOCAL_PATHS = ["~/notes", "~/Syncthing", "~/scratch", "~/code/*", "~/work/*", "~/recipes"]
+LOCAL_PATHS = [
+    "~/notes",
+    "~/Syncthing",
+    "~/scratch",
+    "~/code/*",
+    "~/work/*",
+    "~/recipes",
+]
 
 
 class Muxer:
@@ -79,6 +86,18 @@ class Muxer:
             self.switch()
         else:
             self.attach()
+
+
+def choose_files():
+    files = (
+        subprocess.run(["fzf", "-m"], capture_output=True).stdout.decode().splitlines()
+    )
+    return files
+
+
+def edit_chosen_files(files):
+    proc = subprocess.run(["nvim", *files], capture_output=True)
+    print(proc)
 
 
 def log_and_run(command):
@@ -160,6 +179,7 @@ def choose(listy, prompt, query=""):
 def main():
     parser = ArgumentParser()
     parser.add_argument("query", type=str, nargs="?", default="")
+    parser.add_argument("--files", action="store_true")
     parser.add_argument(
         "-w",
         "--window",
@@ -189,8 +209,10 @@ def main():
 
     # tmux_function = tmux_window if args.window else tmux_session
     muxer = Muxer(name=name, dir=dir, command=shellcommand)
+
     if args.window:
         muxer.new_window()
     else:
         muxer.new_session()
+
     # tmux_function(name, dir, shellcommand)
