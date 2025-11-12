@@ -88,18 +88,6 @@ class Muxer:
             self.attach()
 
 
-def choose_files():
-    files = (
-        subprocess.run(["fzf", "-m"], capture_output=True).stdout.decode().splitlines()
-    )
-    return files
-
-
-def edit_chosen_files(files):
-    proc = subprocess.run(["nvim", *files], capture_output=True)
-    print(proc)
-
-
 def log_and_run(command):
     command = [c.strip() for c in command if c]
     logger.info("`" + " ".join(command) + "`")
@@ -179,18 +167,27 @@ def choose(listy, prompt, query=""):
 def main():
     parser = ArgumentParser()
     parser.add_argument("query", type=str, nargs="?", default="")
-    parser.add_argument("--files", action="store_true")
     parser.add_argument(
         "-w",
         "--window",
         action="store_true",
         help="Use a new window in current session, rather than a new session",
     )
+    cmd = parser.add_mutually_exclusive_group()
+    cmd.add_argument("--ssh", action="store_true")
+    cmd.add_argument("--directory", action="store_true")
 
     args = parser.parse_args()
     query = f"{args.query}" if args.query else ""
 
-    candidates = get_ssh_hosts(query) + get_local_directories(query)
+    candidates_directories = get_local_directories(query)
+    candidates_ssh = get_ssh_hosts(query)
+    candidates = candidates_ssh + candidates_directories
+    if args.ssh:
+        candidates = candidates_ssh
+    elif args.directory:
+        candidates = candidates_directories
+
     prompt = "WINDOW > " if args.window else "SESSION > "
     chosen = choose(candidates, prompt=prompt, query=f"'{query}")
     if not chosen:
